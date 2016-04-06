@@ -143,7 +143,6 @@ uint8_t read_source_layers_cache(keypos_t key)
 
     return layer;
 }
-#endif
 
 /*
  * Make sure the action triggered when the key is released is the same
@@ -151,53 +150,58 @@ uint8_t read_source_layers_cache(keypos_t key)
  * when the layer is switched after the down event but before the up
  * event as they may get stuck otherwise.
  */
-action_t store_or_get_action(bool pressed, keypos_t key)
+uint8_t get_source_layer(keypos_t key, bool pressed)
 {
-#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
     if (disable_action_cache) {
-        return layer_switch_get_action(key);
-    }
-
-    uint8_t layer;
-
+        pressed = 1;
+    }    
     if (pressed) {
-        layer = layer_switch_get_layer(key);
-        update_source_layers_cache(key, layer);
+        action_t action;
+        uint32_t master_layer_state = layer_state | default_layer_state;
+        /* check top layer first */
+        for (int8_t layer = 31; layer >= 0; layer--) {
+            if (master_layer_state & (1UL << layer)) {
+                action = action_for_key(layer, key);
+                if (action.code != ACTION_TRANSPARENT) {
+                    if (!disable_action_cache) {
+                        update_source_layers_cache(key, layer);
+                    }
+                    return layer;
+                }
+            }
+        }
+        /* fall back to layer 0 */
+        if (!disable_action_cache) {
+            update_source_layers_cache(key, 0);
+        }
+        return 0;
+    } else {
+        return read_source_layers_cache(key);
     }
-    else {
-        layer = read_source_layers_cache(key);
-    }
-    return action_for_key(layer, key);
-#else
-    return layer_switch_get_action(key);
-#endif
 }
 
-
-int8_t layer_switch_get_layer(keypos_t key)
+#else
+action_t layer_switch_get_action(keypos_t key)
 {
     action_t action;
-    action.code = ACTION_TRANSPARENT;
 
 #ifndef NO_ACTION_LAYER
-    uint32_t layers = layer_state | default_layer_state;
+    uint32_t master_layer_state = layer_state | default_layer_state;
     /* check top layer first */
-    for (int8_t i = 31; i >= 0; i--) {
-        if (layers & (1UL<<i)) {
-            action = action_for_key(i, key);
+    for (int8_t layer = 31; layer >= 0; layer--) {
+        if (layers & (1UL << layer)) {
+            action = action_for_key(layer, key);
             if (action.code != ACTION_TRANSPARENT) {
-                return i;
+                return action;
             }
         }
     }
     /* fall back to layer 0 */
-    return 0;
+    action = action_for_key(0, key);
+    return action;
 #else
-    return biton32(default_layer_state);
+    action = action_for_key(biton32(default_layer_state), key);
+    return action;
 #endif
 }
-
-action_t layer_switch_get_action(keypos_t key)
-{
-    return action_for_key(layer_switch_get_layer(key), key);
-}
+#endif
