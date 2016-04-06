@@ -115,8 +115,9 @@ If such situation bothers you add this to your `config.h`:
 
     #define PREVENT_STUCK_MODIFIERS
 
-Warning: This option uses up 1 byte of memory per key. For example on
-Planck it uses 4\*12=48 bytes.
+This option uses 5 bytes of memory per every 8 keys on the keyboard
+rounded up (5 bits per key). For example on Planck (48 keys) it uses
+(48/8)\*5 = 30 bytes.
 
 ### Remember: These are just aliases
 
@@ -289,7 +290,7 @@ For this mod, you need an unused pin wiring to DI of WS2812 strip. After wiring 
 
     RGBLIGHT_ENABLE = yes
 
-Please note that the underglow is not compatible with MIDI functions. So you cannot enable both of them at the same time.
+Please note that the underglow is not compatible with audio output. So you cannot enable both of them at the same time.
 
 Please add the following options into your config.h, and set them up according your hardware configuration.
 

@@ -55,7 +55,6 @@ void action_exec(keyevent_t event)
 
 #if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
 bool disable_action_cache = false;
-uint8_t source_layers_cache[5][(MATRIX_ROWS * MATRIX_COLS + 7) / 8] = {0};
 
 void process_action_nocache(keyrecord_t *record)
 {
@@ -70,39 +69,8 @@ void process_action_nocache(keyrecord_t *record)
 }
 #endif
 
-/*
- * Make sure the action triggered when the key is released is the same
- * one as the one triggered on press. It's important for the mod keys
- * when the layer is switched after the down event but before the up
- * event as they may get stuck otherwise.
- */
-action_t store_or_get_action(bool pressed, keypos_t key)
-{
-#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
-    if (disable_action_cache) {
-        return layer_switch_get_action(key);
-    }
-    uint8_t key_number = key.col + (key.row * MATRIX_COLS);
-    uint8_t storage_row = key_number / 8;
-    uint8_t storage_bit = key_number % 8;
-    uint8_t layer;
-    if (pressed) {
-        layer = layer_switch_get_layer(key);
-        for (uint8_t bit_number = 0; bit_number <= 4; bit_number++) {
-            source_layers_cache[bit_number][storage_row] ^= (-(bool)((layer & (1U << bit_number)) != 0) ^ source_layers_cache[bit_number][storage_row])) & (1U << storage_bit);
-        }
-    }
-    else {
-        layer = 0;
-        for (uint8_t bit_number = 0; bit_number <= 4; bit_number++) {
-            layer |= (uint8_t)((source_layers_cache[bit_number][storage_row] & (1U << storage_bit)) != 0) << bit_number;
-        }
-    }
-    return action_for_key(layer, key);
-#else
-    return layer_switch_get_action(key);
-#endif
-}
+__attribute__ ((weak))
+void process_action_kb(keyrecord_t *record) {}
 
 void process_action(keyrecord_t *record)
 {
@@ -113,6 +81,8 @@ void process_action(keyrecord_t *record)
 
     if (IS_NOEVENT(event)) { return; }
 
+    process_action_kb(record);
+
     action_t action = store_or_get_action(event.pressed, event.key);
     dprint("ACTION: "); debug_action(action);
 #ifndef NO_ACTION_LAYER
@@ -121,6 +91,10 @@ void process_action(keyrecord_t *record)
 #endif
     dprintln();
 
+    if (event.pressed) {
+        // clear the potential weak mods left by previously pressed keys
+        clear_weak_mods();
+    }
     switch (action.kind.id) {
         /* Key and Mods */
         case ACT_LMODS:
@@ -551,6 +525,7 @@ void clear_keyboard(void)
 void clear_keyboard_but_mods(void)
 {
     clear_weak_mods();
+    clear_macro_mods();
     clear_keys();
     send_keyboard_report();
 #ifdef MOUSEKEY_ENABLE
