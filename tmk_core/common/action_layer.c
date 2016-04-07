@@ -144,6 +144,22 @@ uint8_t read_source_layers_cache(keypos_t key)
     return layer;
 }
 
+uint8_t find_source_layer(keypos_t key)
+{
+    action_t action;
+    uint32_t master_layer_state = layer_state | default_layer_state;
+    /* check top layer first */
+    for (int8_t layer = 31; layer >= 0; layer--) {
+        if (layers & (1UL << layer)) {
+            action = action_for_key(layer, key);
+            if (action.code != ACTION_TRANSPARENT) {
+                return layer;
+            }
+        }
+    }
+    /* fall back to layer 0 */
+    return 0;
+}
 /*
  * Make sure the action triggered when the key is released is the same
  * one as the one triggered on press. It's important for the mod keys
@@ -156,25 +172,11 @@ uint8_t get_source_layer(keypos_t key, bool pressed)
         pressed = 1;
     }    
     if (pressed) {
-        action_t action;
-        uint32_t master_layer_state = layer_state | default_layer_state;
-        /* check top layer first */
-        for (int8_t layer = 31; layer >= 0; layer--) {
-            if (master_layer_state & (1UL << layer)) {
-                action = action_for_key(layer, key);
-                if (action.code != ACTION_TRANSPARENT) {
-                    if (!disable_action_cache) {
-                        update_source_layers_cache(key, layer);
-                    }
-                    return layer;
-                }
-            }
-        }
-        /* fall back to layer 0 */
+        uint8_t layer = find_source_layer(key);
         if (!disable_action_cache) {
-            update_source_layers_cache(key, 0);
+            update_source_layers_cache(key, layer);
         }
-        return 0;
+        return layer;
     } else {
         return read_source_layers_cache(key);
     }
