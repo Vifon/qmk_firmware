@@ -86,6 +86,7 @@ void process_action(keyrecord_t *record)
     action_t action = action_for_key(get_source_layer(event.key, event.pressed), event.key);
 #else
     action_t action = layer_switch_get_action(key);
+#endif
     dprint("ACTION: "); debug_action(action);
 #ifndef NO_ACTION_LAYER
     dprint(" layer_state: "); layer_debug();
