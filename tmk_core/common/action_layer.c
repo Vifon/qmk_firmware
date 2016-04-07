@@ -144,14 +144,13 @@ uint8_t read_source_layers_cache(keypos_t key)
     return layer;
 }
 
-uint8_t find_source_layer(keypos_t key)
+int8_t find_source_layer(keypos_t key)
 {
-    action_t action;
     uint32_t master_layer_state = layer_state | default_layer_state;
     /* check top layer first */
     for (int8_t layer = 31; layer >= 0; layer--) {
-        if (layers & (1UL << layer)) {
-            action = action_for_key(layer, key);
+        if (master_layer_state & (1UL << layer)) {
+            action_t action = action_for_key(layer, key);
             if (action.code != ACTION_TRANSPARENT) {
                 return layer;
             }
@@ -168,10 +167,7 @@ uint8_t find_source_layer(keypos_t key)
  */
 uint8_t get_source_layer(keypos_t key, bool pressed)
 {
-    if (disable_action_cache) {
-        pressed = 1;
-    }    
-    if (pressed) {
+    if (pressed || disable_action_cache) {
         uint8_t layer = find_source_layer(key);
         if (!disable_action_cache) {
             update_source_layers_cache(key, layer);
@@ -185,25 +181,21 @@ uint8_t get_source_layer(keypos_t key, bool pressed)
 #else
 action_t layer_switch_get_action(keypos_t key)
 {
-    action_t action;
-
 #ifndef NO_ACTION_LAYER
     uint32_t master_layer_state = layer_state | default_layer_state;
     /* check top layer first */
     for (int8_t layer = 31; layer >= 0; layer--) {
-        if (layers & (1UL << layer)) {
-            action = action_for_key(layer, key);
+        if (master_layer_state & (1UL << layer)) {
+            action_t action = action_for_key(layer, key);
             if (action.code != ACTION_TRANSPARENT) {
                 return action;
             }
         }
     }
     /* fall back to layer 0 */
-    action = action_for_key(0, key);
-    return action;
+    return action_for_key(0, key);
 #else
-    action = action_for_key(biton32(default_layer_state), key);
-    return action;
+    return action_for_key(biton32(default_layer_state), key);
 #endif
 }
 #endif
