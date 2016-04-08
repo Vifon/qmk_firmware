@@ -85,7 +85,7 @@ void process_action(keyrecord_t *record)
 #if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
     action_t action = action_for_key(get_source_layer(event.key, event.pressed), event.key);
 #else
-    action_t action = layer_switch_get_action(key);
+    action_t action = layer_switch_get_action(event.key);
 #endif
     dprint("ACTION: "); debug_action(action);
 #ifndef NO_ACTION_LAYER
