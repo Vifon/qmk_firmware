@@ -99,6 +99,7 @@ void layer_and(uint32_t state)
 {
     layer_state_set(layer_state & state);
 }
+
 void layer_xor(uint32_t state)
 {
     layer_state_set(layer_state ^ state);
@@ -108,17 +109,15 @@ void layer_debug(void)
 {
     dprintf("%08lX(%u)", layer_state, biton32(layer_state));
 }
-#endif
 
+#endif
 #if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
 uint8_t source_layers_cache[MAX_LAYER_BITS][(MATRIX_ROWS * MATRIX_COLS + 7) / 8] = {0};
-
 void update_source_layers_cache(keypos_t key, uint8_t layer)
 {
     const uint8_t key_number = key.col + (key.row * MATRIX_COLS);
     const uint8_t storage_row = key_number / 8;
     const uint8_t storage_bit = key_number % 8;
-
     for (uint8_t bit_number = 0; bit_number < MAX_LAYER_BITS; bit_number++) {
         source_layers_cache[bit_number][storage_row] ^=
             (-((layer & (1U << bit_number)) != 0)
@@ -133,14 +132,12 @@ uint8_t read_source_layers_cache(keypos_t key)
     const uint8_t storage_row = key_number / 8;
     const uint8_t storage_bit = key_number % 8;
     uint8_t layer = 0;
-
     for (uint8_t bit_number = 0; bit_number < MAX_LAYER_BITS; bit_number++) {
         layer |=
             ((source_layers_cache[bit_number][storage_row]
               & (1U << storage_bit)) != 0)
             << bit_number;
     }
-
     return layer;
 }
 
@@ -159,6 +156,7 @@ int8_t find_source_layer(keypos_t key)
     /* fall back to layer 0 */
     return 0;
 }
+
 /*
  * Make sure the action triggered when the key is released is the same
  * one as the one triggered on press. It's important for the mod keys
