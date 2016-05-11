@@ -53,20 +53,20 @@ void action_exec(keyevent_t event)
 #endif
 }
 
-#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_MODIFIERS)
-bool disable_action_cache = false;
+#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_KEYS)
+static bool force_find_action = false;
 
-void process_action_nocache(keyrecord_t *record)
-{
-    disable_action_cache = true;
+void process_action_find_action(keyrecord_t *record) {
+    force_find_action = true;
     process_action(record);
-    disable_action_cache = false;
+    force_find_action = false;
 }
+
 #else
-void process_action_nocache(keyrecord_t *record)
-{
+void process_action_find_action(keyrecord_t *record) {
     process_action(record);
 }
+
 #endif
 
 __attribute__ ((weak))
@@ -91,7 +91,17 @@ void process_action(keyrecord_t *record)
 
     process_action_kb(record);
 
-    action_t action = store_or_get_action(event.pressed, event.key);
+#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_KEYS)
+    action_t action;
+    if (force_find_action) {
+        action = find_action(event.key);
+    }
+    else {
+        action = get_action(event.key, event.pressed);
+    }
+#else
+    action_t action = layer_switch_get_action(event.key);
+#endif
     dprint("ACTION: "); debug_action(action);
 #ifndef NO_ACTION_LAYER
     dprint(" layer_state: "); layer_debug();
@@ -630,7 +640,11 @@ void clear_keyboard_but_mods(void)
 
 bool is_tap_key(keypos_t key)
 {
+#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_KEYS)
+    action_t action = find_action(key);
+#else
     action_t action = layer_switch_get_action(key);
+#endif
 
     switch (action.kind.id) {
         case ACT_LMODS_TAP:
@@ -688,3 +702,14 @@ void debug_action(action_t action)
     }
     dprintf("[%X:%02X]", action.kind.param>>8, action.kind.param&0xff);
 }
+
+#if !defined(NO_ACTION_LAYER) && defined(PREVENT_STUCK_KEYS)
+inline action_t get_action(keypos_t key, bool pressed) {
+    return action_for_key(get_layer(key, pressed), key);
+}
+
+inline action_t find_action(keypos_t key) {
+    return action_for_key(find_layer(key), key);
+}
+
+#endif
