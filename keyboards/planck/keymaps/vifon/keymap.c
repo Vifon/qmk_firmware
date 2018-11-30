@@ -53,7 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ),
     [_PPG] = LAYOUT_planck_mit( /* Pure Pro: Gaming */
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        KC_ESC,  _______, _______, _______, _______, _______, _______, _______, _______, KC_RSFT, _______, KC_RCTL,
+        KC_ESC,  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, _______, KM_LW,   _______, KM_RS,        _______,     KM_RS  , _______, _______, _______, _______
         ),
@@ -141,24 +141,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         break;
     case KM_RST:
-    {
-        /* Make slash available on the PP layer. */
-        if ((1UL << _PP) & default_layer_state) {
-            int32_t old_default_layer_state = default_layer_state;
-            int32_t old_layer_state = layer_state;
-
-            layer_state = 0;
-            default_layer_state = (1UL << _QW);
-
-            process_record(record);
-
-            layer_state = old_layer_state;
-            default_layer_state = old_default_layer_state;
-
-            return false;
-        }
-    }
-
         if (record->event.pressed) {
             key_timer = timer_read();
         } else {
