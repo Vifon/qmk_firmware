@@ -47,14 +47,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ),
     [_PP] = LAYOUT_planck_mit( /* Pure Pro */
         KC_TAB,  KC_Q,     KC_W,    KC_E,    KC_R,  KC_T,   KC_Y,   KC_U,  KC_I,    KC_O,                 KC_P,    KC_BSPC,
-        KC_ESC,  KC_A,     KC_S,    KC_D,    KC_F,  KC_G,   KC_H,   KC_J,  KC_K,    KC_L,                 KC_SCLN, KC_ENT,
+        _______, KC_A,     KC_S,    KC_D,    KC_F,  KC_G,   KC_H,   KC_J,  KC_K,    KC_L,                 KC_SCLN, KC_ENT,
         KC_LSFT, KC_Z,     KC_X,    KC_C,    KC_V,  KC_B,   KC_N,   KC_M,  KC_COMM, MT(MOD_RSFT, KC_DOT), KC_UP,   MT(MOD_RCTL, KC_SLSH),
         KC_LCTL, MO(_DYN), KC_LGUI, KC_LALT, KM_LW,     KC_SPC,     KM_RS, KC_RALT, KC_LEFT,              KC_DOWN, KC_RGHT
         ),
     [_PPG] = LAYOUT_planck_mit( /* Pure Pro: Gaming */
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        KC_ESC,  _______, _______, _______, _______, _______, _______, _______, _______, KC_RSFT, _______, KC_RCTL,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_RSFT, _______, KC_RCTL,
         _______, _______, KM_LW,   _______, KM_RS,        _______,     KM_RS  , _______, _______, _______, _______
         ),
     [_NM] = LAYOUT_planck_mit( /* Numeric */
