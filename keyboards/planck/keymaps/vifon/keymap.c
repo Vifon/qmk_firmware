@@ -20,7 +20,6 @@ enum userlayer {
 enum planck_keycodes {
     KM_LW = SAFE_RANGE,
     KM_RS,
-    KM_SHLK,                    /* ShiftLock */
     KM_HOLD,                    /* Any-key Lock */
     KM_RST,                     /* Reset */
     KM_NUM,                     /* Numeric layer */
@@ -84,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_DYN] = LAYOUT_planck_mit( /* special */
         KM_HOLD,  DYN_REC_START1, DYN_MACRO_PLAY1, _______, _______,    _______, _______, KC_APP,  KC_INS,  _______, KC_PSCR, KC_PAUS,
         KC_LOCK,  DYN_REC_START2, DYN_MACRO_PLAY2, _______, _______,    _______, _______, _______, _______, KC_CAPS, KC_SLCK, KC_NLCK,
-        KM_SHLK,  _______,        _______,         _______, _______,    _______, _______, _______, _______, _______, _______, _______,
+        _______,  _______,        _______,         _______, _______,    _______, _______, _______, _______, _______, _______, _______,
         _______,  _______,        _______,         _______, KM_PP_GAME,      DF(_QW),     DF(_PP), _______, _______, _______, _______
         ),
 };
@@ -131,9 +130,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         update_tri_layer(_LW, _RS, _DL);
         return false;
-        break;
-    case KM_SHLK:
-        register_code(KC_LSFT);
         break;
     case KM_HOLD:
         if (!record->event.pressed) {
