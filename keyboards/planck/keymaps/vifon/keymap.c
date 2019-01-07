@@ -81,10 +81,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, KC_LGUI, KC_LALT, _______,           _______,           _______, _______, _______, _______, _______
         ),
     [_DYN] = LAYOUT_planck_mit( /* special */
-        KM_HOLD,  DYN_REC_START1, DYN_MACRO_PLAY1, _______, _______,    _______, _______, KC_APP,  KC_INS,  _______, KC_PSCR, KC_PAUS,
-        KC_LOCK,  DYN_REC_START2, DYN_MACRO_PLAY2, _______, _______,    _______, _______, _______, _______, KC_CAPS, KC_SLCK, KC_NLCK,
-        _______,  _______,        _______,         _______, _______,    _______, _______, _______, _______, _______, _______, _______,
-        _______,  _______,        _______,         _______, KM_PP_GAME,      DF(_QW),     DF(_PP), _______, _______, _______, _______
+        KM_HOLD,  DYN_REC_START1, DYN_MACRO_PLAY1, _______, _______,    _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PSCR, KC_PAUS,
+        KC_LOCK,  DYN_REC_START2, DYN_MACRO_PLAY2, _______, _______,    _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_NLCK, KC_SLCK,
+        _______,  _______,        _______,         _______, _______,    _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, _______, KC_CAPS,
+        _______,  _______,        _______,         _______, KM_PP_GAME,      DF(_QW),     DF(_PP), KC_KP_0, KC_PDOT, _______, _______
         ),
 };
 
