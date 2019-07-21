@@ -26,9 +26,11 @@ enum planck_keycodes {
     KM_SLP,                     /* Sleep 250 ms */
     KM_PP_GAME,                 /* Pure Pro Gaming layer */
     KM_PP_HOLD,                 /* Pure Pro / PP Gaming layer */
+    KM_BL_TOGG,
     DYNAMIC_MACRO_RANGE,
 };
 
+#include "backlight.h"
 #include "dynamic_macro.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -66,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TILD, KC_EXLM,    KC_AT,      KC_HASH,    KC_DLR,     KC_PERC,    KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_BSPC,
         KC_ESC,  LGUI(KC_1), LGUI(KC_2), LGUI(KC_3), LGUI(KC_4), LGUI(KC_5), KM_NUM,  KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
         _______, LGUI(KC_6), LGUI(KC_7), LGUI(KC_8), LGUI(KC_9), LGUI(KC_0), KM_SLP,  KC_HOME, KC_PGDN, KC_PGUP, KC_END,  KC_ENT,
-        _______, BL_TOGG,    _______,    _______,    _______,          _______,       _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+        _______, KM_BL_TOGG, _______,    _______,    _______,          _______,       _______, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
         ),
     [_RS] = LAYOUT_planck_mit( /* RAISE */
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,       KC_0,    KC_DEL,
@@ -171,6 +173,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case KM_SLP:
         if (record->event.pressed) {
             _delay_ms(250);
+        }
+        break;
+    case KM_BL_TOGG:
+        if (!record->event.pressed) {
+            if (get_backlight_level() > 0) {
+                backlight_level(0);
+            } else {
+                backlight_level(BACKLIGHT_LEVELS);
+            }
         }
         break;
     }
